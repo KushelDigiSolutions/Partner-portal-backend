@@ -1,0 +1,35 @@
+-- MySQL schema for partner_portal
+CREATE DATABASE IF NOT EXISTS partner_portal;
+USE partner_portal;
+
+CREATE TABLE IF NOT EXISTS admin (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    profile VARCHAR(200),
+    role ENUM('admin', 'super_admin') NOT NULL DEFAULT 'admin',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  )
+
+
+CREATE TABLE IF NOT EXISTS partner (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    description VARCHAR(100) NOT NULL,
+    website VARCHAR(200) NOT NULL,
+    platform VARCHAR(100) NOT NULL,
+    affiliate_handle VARCHAR(100) NOT NULL,
+    additional_info TEXT,
+    password VARCHAR(255),
+    status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
+    isRegistered BOOLEAN DEFAULT false,
+    profileImage TEXT,
+    mobilePhone VARCHAR(30) NOT NULL,
+    role VARCHAR(50) NOT NULL DEFAULT 'partner',
+    refernceLink VARCHAR(8),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  )
