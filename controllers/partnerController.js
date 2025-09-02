@@ -82,6 +82,29 @@ export const createPartner = async (req, res) => {
     }
 };
 
+export const getAllPartners = async (req, res) => {
+    try {
+        const db = pool.promise();
+        const [results] = await db.execute("SELECT * FROM partner");
+
+        // har record se password remove karo
+        const sanitizedResults = results.map(({ password, ...rest }) => rest);
+
+        return res.status(200).json({
+            success: true,
+            message: "Partners fetched successfully",
+            data: sanitizedResults,
+        });
+    } catch (error) {
+        console.error("Error fetching partners:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Failed to fetch partners",
+            error: error.message,
+        });
+    }
+};
+
 // Approve Partner
 export const approvePartner = async (req, res) => {
     try {
@@ -156,7 +179,7 @@ export const approvePartner = async (req, res) => {
         return res.status(200).json({
             success: true,
             message: "Partner approved successfully & email sent",
-            password: plainPassword, // keep only for admin logs (not return to UI in production)
+            password: plainPassword,
             referenceLink,
         });
     } catch (error) {

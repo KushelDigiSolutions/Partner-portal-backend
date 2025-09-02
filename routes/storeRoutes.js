@@ -11,12 +11,6 @@ import { requireRole } from '../middleware/auth.js';
 
 
 const router = Router();
-/**
- * Partner Store Routes
- * Roles:
- *  - admin, super_admin → Full access
- *  - partner → Limited access (own store only)
- */
 
 // Create a new store
 router.post("/", requireRole(["admin", "super_admin"]), createStore);
