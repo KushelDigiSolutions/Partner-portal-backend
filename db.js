@@ -54,4 +54,23 @@ pool.query(`
   else console.log('Partner table is ready.');
 });
 
+
+pool.query(`CREATE TABLE IF NOT EXISTS store (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    partner_id INT NOT NULL,
+    store_name VARCHAR(150) NOT NULL,
+    platform ENUM('shopify', 'bigcommerce', 'custom', 'woocommerce', 'other') NOT NULL,
+    earning DECIMAL(10,2) DEFAULT 0.00,     -- Store se kitna commission aa rha hai
+    total_value DECIMAL(10,2) DEFAULT 0.00, -- Store ki total kimat (like 500 dollar)
+    status ENUM('active', 'inactive') DEFAULT 'active',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    CONSTRAINT fk_store_partner FOREIGN KEY (partner_id) 
+        REFERENCES partner(id) ON DELETE CASCADE
+)`, (err) => {
+  if (err) console.error('Failed to create admin table:', err.message);
+  else console.log('Admin table is ready.');
+})
+
 export default pool;

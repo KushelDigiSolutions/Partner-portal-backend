@@ -5,6 +5,7 @@ import pool from './db.js';
 import adminRoutes from './routes/admin.js';
 import partnerRoutes from './routes/partner.js';
 import authRoutes from './routes/auth.js';
+import partnerStoreRooutes from './routes/storeRoutes.js'
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -21,6 +22,7 @@ app.get('/', (req, res) => {
 app.use('/admin', adminRoutes);
 app.use('/partner', partnerRoutes);
 app.use('/auth', authRoutes);
+app.use('/partner-store', partnerStoreRooutes)
 
 
 // Check DB connection on startup
