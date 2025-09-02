@@ -33,12 +33,39 @@ export const createPartner = async (req, res) => {
         }
 
         const db = pool.promise();
+        // 🔍 Check if email already exists in partner table
+        const [partnerRows] = await db.execute(
+            "SELECT id, status FROM partner WHERE email = ?",
+            [data.email]
+        );
 
-        // 🔍 Check email in both partner & admin
-        const [[partnerRows], [adminRows]] = await Promise.all([
-            db.execute("SELECT id FROM partner WHERE email = ?", [data.email]),
-            db.execute("SELECT id FROM admin WHERE email = ?", [data.email]),
-        ]);
+        if (partnerRows.length > 0) {
+            const existingPartner = partnerRows[0];
+
+            if (existingPartner.status === "pending" || existingPartner.status === "approved") {
+                return res.status(400).json({
+                    success: false,
+                    message: `This email is already registered as a Partner with status '${existingPartner.status}'`,
+                });
+            }
+
+            if (existingPartner.status === "rejected") {
+                // ✅ Delete old rejected partner so new one can be created
+                await db.execute("DELETE FROM partner WHERE id = ?", [existingPartner.id]);
+            }
+        }
+
+        // 🔍 Check if email exists in admin
+        const [adminRows] = await db.execute(
+            "SELECT id FROM admin WHERE email = ?",
+            [data.email]
+        );
+        if (adminRows.length > 0) {
+            return res.status(400).json({
+                success: false,
+                message: "This email is already registered as an Admin",
+            });
+        }
 
         if (partnerRows.length > 0) {
             return res.status(400).json({ success: false, message: "This email is already registered as a Partner" });

@@ -6,11 +6,18 @@ import adminRoutes from './routes/admin.js';
 import partnerRoutes from './routes/partner.js';
 import authRoutes from './routes/auth.js';
 import partnerStoreRooutes from './routes/storeRoutes.js'
+import cors from 'cors';  
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
+
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 // Example route
 app.get('/', (req, res) => {
