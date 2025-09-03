@@ -17,7 +17,7 @@ const transporter = nodemailer.createTransport({
 export const sendMail = async (to, subject, html) => {
   try {
     const info = await transporter.sendMail({
-      from: `"KRC Customizer" <${process.env.EMAIL_USER}>`, // sender address
+      from: `"KR Customizer" <${process.env.EMAIL_USER}>`, // sender address
       to, // receiver
       subject, // Subject line
       html, // html body

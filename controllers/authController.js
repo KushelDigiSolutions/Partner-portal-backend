@@ -88,31 +88,51 @@ export const forgetPassword = async (req, res) => {
 
         const db = pool.promise();
 
-        // Check if email exists in admin or partner
+        // Check in both admin and partner
         const [admins] = await db.execute("SELECT * FROM admin WHERE email = ?", [email]);
         const [partners] = await db.execute("SELECT * FROM partner WHERE email = ?", [email]);
 
-        if (admins.length === 0 && partners.length === 0) {
+        let user = null;
+        let role = null;
+
+        if (admins.length > 0) {
+            user = admins[0];
+            role = "admin";
+        } else if (partners.length > 0) {
+            user = partners[0];
+            role = "partner";
+        }
+
+        if (!user) {
             return res.status(404).json({ success: false, message: "Email not registered" });
         }
 
-        // Generate OTP (6 digit random number)
+        if (!user.password) {
+            return res.status(403).json({ success: false, message: `${role} not registered yet by admin` });
+        }
+
+        // Generate 6-digit OTP
         const otpCode = crypto.randomInt(100000, 999999).toString();
 
-        // Expiry time = current time + 10 minutes
+        // Expiry = 10 mins
         const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
 
-        // Save OTP in DB (first delete old OTP for this email)
+        // Remove old OTP
         await db.execute("DELETE FROM otp WHERE email = ?", [email]);
-        await db.execute("INSERT INTO otp (email, otp_code, expires_at) VALUES (?, ?, ?)", [
-            email,
-            otpCode,
-            expiresAt,
-        ]);
 
-        // Send email with OTP
+        // Save new OTP
+        await db.execute(
+            "INSERT INTO otp (email, otp_code, expires_at) VALUES (?, ?, ?)",
+            [email, otpCode, expiresAt]
+        );
+
+        // Send email
         const subject = "Password Reset OTP - KRC Customizer";
-        const html = `<p>Your OTP for password reset is: <b>${otpCode}</b></p><p>This OTP will expire in 10 minutes.</p>`;
+        const html = `
+            <p>Your OTP for password reset is: <b>${otpCode}</b></p>
+            <p>This OTP will expire in 10 minutes.</p>
+        `;
+
         await sendMail(email, subject, html);
 
         return res.status(200).json({ success: true, message: "OTP sent to email" });
