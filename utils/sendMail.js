@@ -33,6 +33,8 @@ export const sendMail = async (to, subject, html) => {
 
 
 
+
+
 // ✅ Email Templates
 export const partnerEmailTemplate = (data) => `
 <!DOCTYPE html>
@@ -109,3 +111,6 @@ export const adminEmailTemplate = (data) => `
 </body>
 </html>
 `;
+
+
+// sendMail("ak1540726@gmail.com","HEllo",partnerEmailTemplate("jame"))

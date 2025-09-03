@@ -73,4 +73,19 @@ pool.query(`CREATE TABLE IF NOT EXISTS store (
   else console.log('Admin table is ready.');
 })
 
+
+pool.query(`CREATE TABLE IF NOT EXISTS otp (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  email VARCHAR(100) NOT NULL,
+  otp_code VARCHAR(10) NOT NULL,
+  reset_token VARCHAR(255) NULL,
+  expires_at DATETIME NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)`, (err) => {
+  if (err) console.error('Failed to create otp table:', err.message);
+  else console.log('OTP table is ready.');
+});
+
+
+
 export default pool;
