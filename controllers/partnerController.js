@@ -278,3 +278,46 @@ export const rejectPartner = async (req, res) => {
         });
     }
 };
+
+
+// Get Single Partner
+export const getPartner = async (req, res) => {
+    try {
+        const { partnerId } = req.params;
+
+        if (!partnerId) {
+            return res.status(400).json({
+                success: false,
+                message: "Partner ID is required",
+            });
+        }
+
+        const db = pool.promise();
+
+        // Partner fetch karo
+        const [rows] = await db.execute("SELECT * FROM partner WHERE id = ?", [partnerId]);
+
+        if (rows.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "Partner not found",
+            });
+        }
+
+        // password field remove karo
+        const { password, ...partner } = rows[0];
+
+        return res.status(200).json({
+            success: true,
+            message: "Partner fetched successfully",
+            data: partner,
+        });
+    } catch (error) {
+        console.error("Error fetching partner:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Failed to fetch partner",
+            error: error.message,
+        });
+    }
+};
