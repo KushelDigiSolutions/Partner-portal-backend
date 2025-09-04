@@ -6,6 +6,7 @@ import adminRoutes from './routes/admin.js';
 import partnerRoutes from './routes/partner.js';
 import authRoutes from './routes/auth.js';
 import partnerStoreRooutes from './routes/storeRoutes.js'
+import storePaymentRoutes from "./routes/storePayment.js";
 import cors from 'cors';  
 
 const app = express();
@@ -29,7 +30,8 @@ app.get('/', (req, res) => {
 app.use('/admin', adminRoutes);
 app.use('/partner', partnerRoutes);
 app.use('/auth', authRoutes);
-app.use('/partner-store', partnerStoreRooutes)
+app.use('/partner-store', partnerStoreRooutes);
+app.use("/api/store-payments", storePaymentRoutes);
 
 
 // Check DB connection on startup

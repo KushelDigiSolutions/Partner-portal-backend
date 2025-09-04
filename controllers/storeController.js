@@ -114,7 +114,7 @@ export const getStoreById = async (req, res) => {
 
 export const getStoreByPartnerId = async (req, res) => {
   try {
-    const { partnerId } = req.params;  // 🟢 route me :partnerId aayega
+    const { partnerId } = req.params;
     const db = pool.promise();
 
     const [stores] = await db.execute(

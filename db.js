@@ -86,6 +86,29 @@ pool.query(`CREATE TABLE IF NOT EXISTS otp (
   else console.log('OTP table is ready.');
 });
 
+pool.query(`
+  CREATE TABLE IF NOT EXISTS store_payment (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    partner_id INT NOT NULL,
+    store_id INT NOT NULL,
+    
+    amount DECIMAL(10,2) NOT NULL, -- kitna pay kiya gaya
+    commission DECIMAL(10,2) DEFAULT 0.00, -- partner ka commission
+    start_date DATE NOT NULL, -- recharge start
+    end_date DATE NOT NULL,   -- recharge end (e.g. 30 days later)
+    
+    status ENUM('paid', 'pending', 'failed') DEFAULT 'paid',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    CONSTRAINT fk_payment_partner FOREIGN KEY (partner_id) 
+      REFERENCES partner(id) ON DELETE CASCADE,
+    CONSTRAINT fk_payment_store FOREIGN KEY (store_id) 
+      REFERENCES store(id) ON DELETE CASCADE
+  )
+`, (err) => {
+  if (err) console.error('Failed to create store_payment table:', err.message);
+  else console.log('store_payment table is ready.');
+});
 
 
 export default pool;
