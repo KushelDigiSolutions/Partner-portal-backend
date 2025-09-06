@@ -69,6 +69,40 @@ export const getPartnersPayments = async (req, res) => {
     }
 };
 
+export const getPartnerEarning = async (req, res) => {
+    try {
+        const { partner_id } = req.params;
+
+        if (!partner_id) {
+            return res.status(400).json({
+                success: false,
+                message: "partner_id is required",
+            });
+        }
+
+        const db = pool.promise();
+
+        // 🔹 Query to get all payments for a partner (latest first)
+        const [rows] = await db.execute(
+            "SELECT * FROM store_payment WHERE partner_id = ? ORDER BY created_at DESC",
+            [partner_id]
+        );
+
+        return res.status(200).json({
+            success: true,
+            data: rows,
+        });
+    } catch (err) {
+        console.error("Error fetching partner earnings:", err);
+        return res.status(500).json({
+            success: false,
+            message: "Error fetching payments",
+            error: err.message,
+        });
+    }
+};
+
+
 // Get Single Payment by ID
 export const getSinglePayment = async (req, res) => {
     try {
