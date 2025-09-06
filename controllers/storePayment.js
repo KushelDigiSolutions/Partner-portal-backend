@@ -82,9 +82,26 @@ export const getPartnerEarning = async (req, res) => {
 
         const db = pool.promise();
 
-        // 🔹 Query to get all payments for a partner (latest first)
+        // 🔹 Query with JOIN to include store details
         const [rows] = await db.execute(
-            "SELECT * FROM store_payment WHERE partner_id = ? ORDER BY created_at DESC",
+            `
+            SELECT 
+                sp.id,
+                sp.partner_id,
+                sp.store_id,
+                s.store_name,         
+                s.platform,          
+                sp.amount,
+                sp.commission,
+                sp.start_date,
+                sp.end_date,
+                sp.status,
+                sp.created_at
+            FROM store_payment sp
+            JOIN store s ON sp.store_id = s.id
+            WHERE sp.partner_id = ?
+            ORDER BY sp.created_at DESC
+            `,
             [partner_id]
         );
 

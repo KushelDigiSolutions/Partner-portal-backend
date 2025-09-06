@@ -59,10 +59,12 @@ pool.query(`CREATE TABLE IF NOT EXISTS store (
     id INT AUTO_INCREMENT PRIMARY KEY,
     partner_id INT NOT NULL,
     store_name VARCHAR(150) NOT NULL,
+    store_owner VARCHAR(150),
     platform ENUM('shopify', 'bigcommerce', 'custom', 'woocommerce', 'other') NOT NULL,
     earning DECIMAL(10,2) DEFAULT 0.00,     -- Store se kitna commission aa rha hai
     total_value DECIMAL(10,2) DEFAULT 0.00, -- Store ki total kimat (like 500 dollar)
     status ENUM('active', 'inactive') DEFAULT 'active',
+    inactive_reason TEXT DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     
@@ -109,6 +111,15 @@ pool.query(`
   if (err) console.error('Failed to create store_payment table:', err.message);
   else console.log('store_payment table is ready.');
 });
+
+// pool.query(`
+//   ALTER TABLE store
+// ADD COLUMN inactive_reason TEXT DEFAULT NULL AFTER status;
+// `, (err) => {
+//   if (err) console.error('Failed to alter store table:', err.message);
+//   else console.log('store_owner column added to store table.');
+// });
+
 
 
 export default pool;

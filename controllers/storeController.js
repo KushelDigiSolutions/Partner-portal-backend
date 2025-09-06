@@ -6,10 +6,10 @@ export const createStore = async (req, res) => {
   try {
     let data = removeUndefined(req.body);
 
-    if (!data.partner_id || !data.store_name || !data.platform) {
+    if (!data.partner_id || !data.store_name || !data.platform || !data.store_owner) {
       return res.status(400).json({
         success: false,
-        message: "partner_id, store_name and platform are required",
+        message: "partner_id, store_name, store_owner and platform are required",
       });
     }
 
@@ -33,13 +33,14 @@ export const createStore = async (req, res) => {
 
     // ✅ Insert Store
     const query = `
-      INSERT INTO store (partner_id, store_name, platform, earning, total_value, status)
-      VALUES (?, ?, ?, ?, ?, ?)
+      INSERT INTO store (partner_id, store_name, store_owner, platform, earning, total_value, status)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
     `;
 
     const [result] = await db.execute(query, [
       data.partner_id,
       data.store_name,
+      data.store_owner,
       data.platform,
       data.earning || 0.0,
       data.total_value || 0.0,
@@ -60,7 +61,6 @@ export const createStore = async (req, res) => {
     });
   }
 };
-
 
 //  Get All Stores
 export const getAllStores = async (req, res) => {
@@ -148,6 +148,14 @@ export const updateStore = async (req, res) => {
 
     if (Object.keys(data).length === 0) {
       return res.status(400).json({ success: false, message: "No data provided for update" });
+    }
+
+    // Check inactive case
+    if (data.status && data.status === "inactive" && !data.inactive_reason) {
+      return res.status(400).json({
+        success: false,
+        message: "Reason is required when deactivating a store",
+      });
     }
 
     const db = pool.promise();
