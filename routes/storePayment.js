@@ -12,7 +12,7 @@ router.post("/", requireRole(["admin", "super_admin"]), createPartnerStorePaymen
 // Read All Payments (optionally filter by partner/store)
 router.get("/", requireRole(["admin", "super_admin", "partner"]), getPartnersPayments);
 
-router.get("/earn/:partner_id",  getPartnerEarning);
+router.get("/earn/:partner_id", requireRole(["admin", "super_admin", "partner"]), getPartnerEarning);
 
 
 // Get Single Payment by ID
