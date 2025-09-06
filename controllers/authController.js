@@ -69,7 +69,7 @@ export const login = async (req, res) => {
             success: true,
             message: "Partner login successful",
             token,
-            user: { id: partner.id, name: partner.name, email: partner.email, type: "partner" },
+            user: { id: partner.id, name: partner.name, email: partner.email, type: "partner", refernceLink: partner.refernceLink },
         });
     } catch (error) {
         console.error("Login error:", error);
