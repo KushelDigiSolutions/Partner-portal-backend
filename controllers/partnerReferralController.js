@@ -3,51 +3,72 @@ import { removeUndefined } from "../utils/helpers.js";
 
 // Create Referral
 export const createReferral = async (req, res) => {
-    try {
-        let data = removeUndefined(req.body);
+  try {
+    let data = removeUndefined(req.body);
 
-        if (!data.name || !data.email || !data.store_name ) {
-            return res.status(400).json({
-                success: false,
-                message: "Name, email, store_name,"
-            });
-        }
-
-        const db = pool.promise();
-
-        // Check duplicate email
-        const [existing] = await db.execute(`SELECT 1 FROM partner_referrals WHERE email = ?`, [data.email]);
-        if (existing.length > 0) {
-            return res.status(400).json({ success: false, message: "Email already exists in referrals" });
-        }
-
-        // Insert referral
-        const query = `
-            INSERT INTO partner_referrals (name, email, store_name, website, platform, referral_code)
-            VALUES (?, ?, ?, ?, ?, ?)
-        `;
-        const [result] = await db.execute(query, [
-            data.name,
-            data.email,
-            data.store_name,
-            data.website || null,
-            data.platform,
-            data.referral_code
-        ]);
-
-        return res.status(201).json({
-            success: true,
-            message: "Referral created successfully",
-            referralId: result.insertId
-        });
-    } catch (error) {
-        console.error("Error creating referral:", error);
-        return res.status(500).json({
-            success: false,
-            message: "Failed to create referral",
-            error: error.message
-        });
+    if (!data.name || !data.email || !data.store_name) {
+      return res.status(400).json({
+        success: false,
+        message: "Name, email, and store_name are required"
+      });
     }
+
+    const db = pool.promise();
+
+    // 🔹 Check duplicate email
+    const [existing] = await db.execute(
+      `SELECT 1 FROM partner_referrals WHERE email = ?`,
+      [data.email]
+    );
+    if (existing.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Email already exists in referrals"
+      });
+    }
+
+    // 🔹 If referral_code provided, validate it exists in partner table
+    if (data.referral_code) {
+      const [partner] = await db.execute(
+        `SELECT 1 FROM partner WHERE refernceLink = ?`,
+        [data.referral_code]
+      );
+      if (partner.length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid referral_code, no matching partner found"
+        });
+      }
+    }
+
+    // 🔹 Insert referral
+    const query = `
+      INSERT INTO partner_referrals (name, email, store_name, website, platform, phone, referral_code)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `;
+    const [result] = await db.execute(query, [
+      data.name,
+      data.email,
+      data.store_name,
+      data.phone,
+      data.website || null,
+      data.platform || "bigcommerce", // fallback to default
+      data.referral_code || null
+    ]);
+
+    return res.status(201).json({
+      success: true,
+      message: "Referral created successfully",
+      referralId: result.insertId
+    });
+  } catch (error) {
+    console.error("Error creating referral:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to create referral",
+      error: error.message
+    });
+  }
 };
 
 // Get All Referrals with Partner Details
