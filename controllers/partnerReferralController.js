@@ -6,10 +6,10 @@ export const createReferral = async (req, res) => {
   try {
     let data = removeUndefined(req.body);
 
-    if (!data.name || !data.email || !data.store_name) {
+    if (!data.name || !data.email || !data.store_name || !data.phone) {
       return res.status(400).json({
         success: false,
-        message: "Name, email, and store_name are required"
+        message: "Name, email, store_name, and phone are required"
       });
     }
 
@@ -41,18 +41,19 @@ export const createReferral = async (req, res) => {
       }
     }
 
-    // 🔹 Insert referral
+    // ✅ Correct column order
     const query = `
-      INSERT INTO partner_referrals (name, email, store_name, website, platform, phone, referral_code)
+      INSERT INTO partner_referrals 
+      (name, email, store_name, website, phone, platform, referral_code)
       VALUES (?, ?, ?, ?, ?, ?, ?)
     `;
     const [result] = await db.execute(query, [
       data.name,
       data.email,
       data.store_name,
-      data.phone,
       data.website || null,
-      data.platform || "bigcommerce", // fallback to default
+      data.phone,
+      data.platform || "bigcommerce",
       data.referral_code || null
     ]);
 

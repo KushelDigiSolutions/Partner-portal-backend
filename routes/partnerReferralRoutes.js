@@ -12,9 +12,9 @@ import { requireRole } from '../middleware/auth.js';
 const router = express.Router();
 
 router.post("/",createReferral);       // Create
-router.get("/", requireRole(['admin', 'super_admin']), getAllReferrals);       // Get all (with partner details)
-router.get("/:id", requireRole(['admin', 'super_admin']), getReferralById);    // Get by ID (with partner details)
-router.put("/:id", requireRole(['admin', 'super_admin']), updateReferral);     // Update
-router.delete("/:id", requireRole(['admin', 'super_admin']), deleteReferral);  // Delete
+router.get("/",  getAllReferrals);       // Get all (with partner details)
+router.get("/:id",  getReferralById);    // Get by ID (with partner details)
+router.put("/:id", updateReferral);     // Update
+router.delete("/:id",  deleteReferral);  // Delete
 
 export default router;

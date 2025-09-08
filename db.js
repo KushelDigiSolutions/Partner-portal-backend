@@ -135,6 +135,7 @@ CREATE TABLE IF NOT EXISTS partner_referrals (
   website VARCHAR(200),
   phone VARCHAR(30) NOT NULL,
   platform ENUM('shopify', 'bigcommerce', 'custom', 'woocommerce', 'other') DEFAULT 'bigcommerce',
+  status ENUM('New', 'Failed', 'hold', 'confirmed') DEFAULT 'New',
   referral_code VARCHAR(8) DEFAULT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
