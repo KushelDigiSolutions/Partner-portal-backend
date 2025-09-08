@@ -7,7 +7,9 @@ import partnerRoutes from './routes/partner.js';
 import authRoutes from './routes/auth.js';
 import partnerStoreRooutes from './routes/storeRoutes.js'
 import storePaymentRoutes from "./routes/storePayment.js";
-import cors from 'cors';  
+import playbookRoutes from "./routes/partnerPlaybookRoutes.js"
+import refralClent from "./routes/partnerReferralRoutes.js"
+import cors from 'cors';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -32,6 +34,8 @@ app.use('/partner', partnerRoutes);
 app.use('/auth', authRoutes);
 app.use('/partner-store', partnerStoreRooutes);
 app.use("/api/store-payments", storePaymentRoutes);
+app.use("/api/playbooks", playbookRoutes);
+app.use("/api/refral", refralClent)
 
 
 // Check DB connection on startup

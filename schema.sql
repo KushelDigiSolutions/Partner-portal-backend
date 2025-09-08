@@ -48,3 +48,30 @@ CREATE TABLE IF NOT EXISTS store (
     CONSTRAINT fk_store_partner FOREIGN KEY (partner_id) 
         REFERENCES partner(id) ON DELETE CASCADE
 );
+
+
+CREATE TABLE IF NOT EXISTS partner_playbook (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    url VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+
+CREATE TABLE IF NOT EXISTS partner_referrals (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  email VARCHAR(100) NOT NULL UNIQUE,
+  store_name VARCHAR(150) NOT NULL,
+  website VARCHAR(200),
+  platform ENUM('shopify', 'bigcommerce', 'custom', 'woocommerce', 'other') NOT NULL,
+  referral_code VARCHAR(8) DEFAULT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_partner_referral FOREIGN KEY (referral_code)
+    REFERENCES partner(refernceLink)
+    ON DELETE SET NULL
+    ON UPDATE CASCADE
+);

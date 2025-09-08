@@ -90,7 +90,7 @@ export const getPartnerEarning = async (req, res) => {
                 sp.partner_id,
                 sp.store_id,
                 s.store_name, 
-                s.store_owner        
+                s.store_owner,        
                 s.platform,          
                 sp.amount,
                 sp.commission,

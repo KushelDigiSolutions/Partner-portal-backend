@@ -112,9 +112,46 @@ pool.query(`
   else console.log('store_payment table is ready.');
 });
 
+
+pool.query(`
+  CREATE TABLE IF NOT EXISTS partner_playbook (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    url VARCHAR(255) NOT NULL, -- YouTube video URL
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+)`, (err) => {
+  if (err) console.error('Failed to alter store table:', err.message);
+  else console.log('store_owner column added to store table.');
+})
+
+pool.query(`
+CREATE TABLE IF NOT EXISTS partner_referrals (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  email VARCHAR(100) NOT NULL UNIQUE,
+  store_name VARCHAR(150) NOT NULL,
+  website VARCHAR(200),
+  platform ENUM('shopify', 'bigcommerce', 'custom', 'woocommerce', 'other') NOT NULL,
+  referral_code VARCHAR(8) DEFAULT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_partner_referral FOREIGN KEY (referral_code)
+    REFERENCES partner(refernceLink)
+    ON DELETE SET NULL
+    ON UPDATE CASCADE
+)
+
+`, (err) => {
+  if (err) console.error('Failed to create partner_referrals table:', err.message);
+  else console.log('Partner_referrals table is ready.');
+});
+
+
 // pool.query(`
-//   ALTER TABLE store
-// ADD COLUMN inactive_reason TEXT DEFAULT NULL AFTER status;
+// ALTER TABLE partner
+// ADD CONSTRAINT unique_refernceLink UNIQUE (refernceLink);
 // `, (err) => {
 //   if (err) console.error('Failed to alter store table:', err.message);
 //   else console.log('store_owner column added to store table.');
