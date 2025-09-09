@@ -144,7 +144,7 @@ export const updateReferral = async (req, res) => {
         const { id } = req.params;
         let data = removeUndefined(req.body);
 
-        if (!data.name && !data.email && !data.store_name && !data.website && !data.platform && !data.referral_code) {
+        if (!data.name && !data.email && !data.store_name && !data.website && !data.platform && !data.referral_code && !data.status) {
             return res.status(400).json({
                 success: false,
                 message: "At least one field must be provided for update"
