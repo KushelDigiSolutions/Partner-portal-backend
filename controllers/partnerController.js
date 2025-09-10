@@ -22,7 +22,7 @@ export const createPartner = async (req, res) => {
         // 🔍 Required fields validation
         const requiredFields = [
             "name", "email", "description", "website",
-            "platform", "affiliate_handle", "mobilePhone",
+            "platform", "mobilePhone","organization"
         ];
         const missing = requiredFields.filter((f) => !data[f]);
         if (missing.length > 0) {
@@ -77,7 +77,7 @@ export const createPartner = async (req, res) => {
         // 📝 Insert Partner
         const fields = [
             "name", "email", "description", "website",
-            "platform", "affiliate_handle", "additional_info", "mobilePhone",
+            "platform", "organization", "mobilePhone",
         ];
         const insertData = buildInsertData(data, fields);
 

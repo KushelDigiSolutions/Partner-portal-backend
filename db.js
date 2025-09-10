@@ -37,12 +37,12 @@ pool.query(`
     description VARCHAR(100) NOT NULL,
     website VARCHAR(200) NOT NULL,
     platform VARCHAR(100) NOT NULL,
-    affiliate_handle VARCHAR(100) NOT NULL,
     additional_info TEXT,
     password VARCHAR(255),
     status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
     isRegistered BOOLEAN DEFAULT false,
     profileImage TEXT,
+    organization TEXT,
     mobilePhone VARCHAR(30) NOT NULL,
     role VARCHAR(50) NOT NULL DEFAULT 'partner',
     refernceLink VARCHAR(8),
@@ -158,7 +158,6 @@ CREATE TABLE IF NOT EXISTS partner_referrals (
 //   if (err) console.error('Failed to alter store table:', err.message);
 //   else console.log('store_owner column added to store table.');
 // });
-
 
 
 export default pool;
