@@ -191,7 +191,7 @@ export const approvePartner = async (req, res) => {
 
           <p>You can now log in and start using your partner dashboard.</p>
 
-          <a href="https://yourdomain.com/login" 
+          <a href="https://partner.krcustomizer.com/login" 
              style="background:#2E86C1;color:white;padding:10px 15px;text-decoration:none;border-radius:5px;">
              Login Now
           </a>

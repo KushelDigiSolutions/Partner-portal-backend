@@ -33,6 +33,7 @@ pool.query(`
   CREATE TABLE IF NOT EXISTS partner (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
+    organization VARCHAR(150),
     email VARCHAR(100) NOT NULL UNIQUE,
     description VARCHAR(100) NOT NULL,
     website VARCHAR(200) NOT NULL,
@@ -42,7 +43,6 @@ pool.query(`
     status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
     isRegistered BOOLEAN DEFAULT false,
     profileImage TEXT,
-    organization TEXT,
     mobilePhone VARCHAR(30) NOT NULL,
     role VARCHAR(50) NOT NULL DEFAULT 'partner',
     refernceLink VARCHAR(8),
@@ -153,10 +153,18 @@ CREATE TABLE IF NOT EXISTS partner_referrals (
 
 // pool.query(`
 // ALTER TABLE partner
-// ADD CONSTRAINT unique_refernceLink UNIQUE (refernceLink);
+// ADD colum organization unique_refernceLink UNIQUE (refernceLink);
 // `, (err) => {
 //   if (err) console.error('Failed to alter store table:', err.message);
 //   else console.log('store_owner column added to store table.');
+// });
+
+// pool.query(`
+//   ALTER TABLE partner
+//   ADD COLUMN organization VARCHAR(150) AFTER name
+// `, (err) => {
+//   if (err) console.error('Failed to add organization column:', err.message);
+//   else console.log('organization column added successfully.');
 // });
 
 
