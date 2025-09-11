@@ -22,7 +22,7 @@ export const createPartner = async (req, res) => {
         // 🔍 Required fields validation
         const requiredFields = [
             "name", "email", "description", "website",
-            "platform", "mobilePhone","organization"
+            "platform", "mobilePhone","organization","country","city"
         ];
         const missing = requiredFields.filter((f) => !data[f]);
         if (missing.length > 0) {
@@ -77,7 +77,7 @@ export const createPartner = async (req, res) => {
         // 📝 Insert Partner
         const fields = [
             "name", "email", "description", "website",
-            "platform", "organization", "mobilePhone",
+            "platform", "organization", "mobilePhone", "country", "city",
         ];
         const insertData = buildInsertData(data, fields);
 
@@ -179,7 +179,7 @@ export const approvePartner = async (req, res) => {
         await sendMail(partner.email, "Your Partner Account Has Been Approved 🎉", `
         <div style="font-family: Arial, sans-serif; line-height:1.6; color:#333; padding:20px;">
           <h2 style="color:#2E86C1;">Welcome to Our Partner Program!</h2>
-          <p>Dear <strong>${partner.fullname}</strong>,</p>
+          <p>Dear <strong>${partner.name}</strong>,</p>
           <p>We are excited to inform you that your partner account has been <span style="color:green;font-weight:bold;">approved</span>.</p>
           
           <h3>🔑 Your Login Details:</h3>

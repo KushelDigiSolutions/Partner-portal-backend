@@ -6,10 +6,11 @@ export const createReferral = async (req, res) => {
   try {
     let data = removeUndefined(req.body);
 
-    if (!data.name || !data.email || !data.store_name || !data.phone) {
+    // 🔍 Required fields
+    if (!data.name || !data.email || !data.store_name || !data.phone || !data.website || !data.country || !data.city) {
       return res.status(400).json({
         success: false,
-        message: "Name, email, store_name, and phone are required"
+        message: "Name, email, store_name, phone, website, country, and city are required"
       });
     }
 
@@ -41,11 +42,11 @@ export const createReferral = async (req, res) => {
       }
     }
 
-    // ✅ Correct column order
+    // ✅ Insert all required fields according to table
     const query = `
       INSERT INTO partner_referrals 
-      (name, email, store_name, website, phone, platform, referral_code)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
+      (name, email, store_name, website, phone, country, city, platform, status, referral_code)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
     const [result] = await db.execute(query, [
       data.name,
@@ -53,7 +54,10 @@ export const createReferral = async (req, res) => {
       data.store_name,
       data.website || null,
       data.phone,
+      data.country,
+      data.city,
       data.platform || "bigcommerce",
+      data.status || "New",
       data.referral_code || null
     ]);
 

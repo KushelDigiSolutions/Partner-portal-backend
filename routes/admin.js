@@ -8,7 +8,7 @@ import { requireRole } from '../middleware/auth.js';
 const router = Router();
 router.get('/list', requireRole(['admin', 'super_admin']), getAllAdmins);
 router.get('/detail/:id', requireRole(['admin', 'super_admin']), getAdminById);
-router.post('/create', createAdmin);
+router.post('/create', requireRole(['super_admin']), createAdmin);
 router.put('/update/:id', requireRole(['admin', 'super_admin']), updateAdmin);
 router.delete('/remove/:id', requireRole(['admin', 'super_admin']), deleteAdmin);
 
