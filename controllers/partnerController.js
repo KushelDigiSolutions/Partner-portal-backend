@@ -22,7 +22,7 @@ export const createPartner = async (req, res) => {
         // 🔍 Required fields validation
         const requiredFields = [
             "name", "email", "description", "website",
-            "platform", "mobilePhone","organization","country","city"
+            "platform", "mobilePhone", "organization", "country", "city"
         ];
         const missing = requiredFields.filter((f) => !data[f]);
         if (missing.length > 0) {
@@ -214,6 +214,55 @@ export const approvePartner = async (req, res) => {
         return res.status(500).json({
             success: false,
             message: "Failed to approve partner",
+            error: error.message,
+        });
+    }
+};
+
+// Update Partner Profile
+export const updatePartner = async (req, res) => {
+    try {
+        const updateData = removeUndefined(req.body);
+
+        if (!Object.keys(updateData).length) {
+            return res.status(400).json({ success: false, message: "At least one field is required" });
+        }
+
+        // 🔐 Encrypt password if present
+        if (updateData.password) {
+            const salt = await bcrypt.genSalt(10);
+            updateData.password = await bcrypt.hash(updateData.password, salt);
+        }
+
+        const db = pool.promise();
+
+        const query = `
+            UPDATE partner 
+            SET name = ?, description = ?, password = ?, profileImage = ?, mobilePhone = ? 
+            WHERE id = ?
+        `;
+
+        const data = [
+            updateData.name,
+            updateData.description,
+            updateData.password,
+            updateData.profileImage,
+            updateData.mobilePhone,
+            updateData.id,
+        ];
+
+        const [result] = await db.query(query, data);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ success: false, message: "Partner not found" });
+        }
+
+        return res.status(200).json({ success: true, message: "Partner updated successfully" });
+    } catch (error) {
+        console.error("Error updating partner:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Failed to update partner",
             error: error.message,
         });
     }

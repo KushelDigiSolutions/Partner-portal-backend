@@ -5,6 +5,7 @@ import { sendMail } from '../utils/sendMail.js';
 
 const JWT_SECRET = process.env.JWT_SECRET;
 import crypto from "crypto";
+import { profile } from 'console';
 // import bcrypt from "bcrypt";
 
 export const login = async (req, res) => {
@@ -38,7 +39,7 @@ export const login = async (req, res) => {
                 success: true,
                 message: "Admin login successful",
                 token,
-                user: { id: admin.id, name: admin.name, email: admin.email, role: admin.role, type: "admin" },
+                user: { id: admin.id, name: admin.name, email: admin.email, role: admin.role, type: "admin", profile: admin.profile },
             });
         }
 
@@ -69,7 +70,7 @@ export const login = async (req, res) => {
             success: true,
             message: "Partner login successful",
             token,
-            user: { id: partner.id, name: partner.name, email: partner.email, type: "partner", refernceLink: partner.refernceLink },
+            user: { id: partner.id, name: partner.name, email: partner.email, type: "partner", refernceLink: partner.refernceLink, profileImage: partner.profileImage, role: partner.role },
         });
     } catch (error) {
         console.error("Login error:", error);

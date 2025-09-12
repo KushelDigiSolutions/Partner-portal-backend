@@ -1,6 +1,7 @@
 import pool from '../db.js';
 import bcrypt from 'bcryptjs';
 import { removeUndefined } from "../utils/helpers.js";
+import { uploadToCloudinary } from '../utils/cloudnary.js';
 
 // Get all admins
 export const getAllAdmins = async (req, res) => {
@@ -157,6 +158,34 @@ export const deleteAdmin = async (req, res) => {
         return res.status(500).json({
             success: false,
             message: "Failed to delete admin",
+            error: error.message,
+        });
+    }
+};
+
+// post image to cloudinary and return the url and public_id
+export const postImage = async (req, res) => {
+    try {
+        if (!req.files || !req.files.image) {
+            return res.status(400).json({
+                status: false,
+                message: "No image file uploaded",
+            });
+        }
+
+        const image = req.files.image;
+        const details = await uploadToCloudinary(image.tempFilePath);
+
+        return res.status(200).json({
+            status: true,
+            data: details?.secure_url,
+            public_id: details?.public_id,
+        });
+    } catch (error) {
+        console.error("Error in postImage:", error);
+        return res.status(500).json({
+            status: false,
+            message: "Image upload failed",
             error: error.message,
         });
     }

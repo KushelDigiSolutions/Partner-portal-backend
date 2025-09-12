@@ -9,6 +9,7 @@ import partnerStoreRooutes from './routes/storeRoutes.js'
 import storePaymentRoutes from "./routes/storePayment.js";
 import playbookRoutes from "./routes/partnerPlaybookRoutes.js"
 import refralClent from "./routes/partnerReferralRoutes.js"
+import fileUpload from "express-fileupload";
 import cors from 'cors';
 
 const app = express();
@@ -22,6 +23,10 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
+app.use(fileUpload({
+    useTempFiles: true,
+    tempFileDir: "/tmp/",
+}));
 // Example route
 app.get('/', (req, res) => {
   res.send('Partner Portal Backend is running!');
