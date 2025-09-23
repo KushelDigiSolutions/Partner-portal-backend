@@ -60,7 +60,7 @@ export const partnerEmailTemplate = (data) => `
       <p>Thank you for applying to become our partner. 🎉</p>
       <p>Our team is reviewing your application and we’ll get back to you shortly.</p>
       <a href="https://krcustomizer.com" style="background:#f3f4f6;color:white;padding:10px 15px;text-decoration:none;border-radius:5px;">Visit Our Website</a>
-      <p style="margin-top:30px;">Best Regards,<br/>The Team</p>r
+      <p style="margin-top:30px;">Best Regards,<br/>The Team</p>
     </div>
     <div class="footer">
       © ${new Date().getFullYear()} Partner Program. All rights reserved.

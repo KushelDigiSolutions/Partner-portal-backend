@@ -1,4 +1,4 @@
-import { unlinkSync } from "fs";
+import { promises as fsPromises } from "fs";
 import { v2 as cloudinary } from "cloudinary";
 
 
@@ -11,19 +11,29 @@ cloudinary.config({
 
 
 export const uploadToCloudinary = async (localpath) => {
-    try {
-        if (!localpath) return null;
-        const responce = await cloudinary.uploader.upload(localpath, {
-            resource_type: "auto",
-        });
-        unlinkSync(localpath);
-        // console.log("response", responce); for debugging purpose
-        return responce;
-    } catch (error) {
-        console.log("error is encountered ", error.message);
-        unlinkSync(localpath);
-        return { message: "Fail" };
-    }
+  try {
+    if (!localpath) return null;
+
+    // Upload to Cloudinary
+    const response = await cloudinary.uploader.upload(localpath, {
+      resource_type: "auto", // Automatically detect file type
+      transformation: [
+        { quality: "auto", fetch_format: "auto" }, // Optimize quality and format
+      ],
+    });
+
+    // Async file deletion after upload
+    await fsPromises.unlink(localpath);
+
+    return response;
+  } catch (error) {
+    console.error("Error encountered during Cloudinary upload:", error.message);
+
+    // Async file deletion in case of error as well
+    await fsPromises.unlink(localpath);
+
+    return { message: "Fail" };
+  }
 };
 
 

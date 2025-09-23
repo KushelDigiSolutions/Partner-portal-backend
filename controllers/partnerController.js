@@ -224,40 +224,62 @@ export const updatePartner = async (req, res) => {
     try {
         const updateData = removeUndefined(req.body);
 
-        if (!Object.keys(updateData).length) {
-            return res.status(400).json({ success: false, message: "At least one field is required" });
+        // Check if partner ID is provided
+        if (!updateData.id) {
+            return res.status(400).json({ success: false, message: "Partner ID is required" });
         }
 
-        // 🔐 Encrypt password if present
+        // Check if there is at least one field to update
+        if (Object.keys(updateData).length <= 1) {
+            return res.status(400).json({ success: false, message: "At least one field is required to update" });
+        }
+
+        // 🔐 Encrypt password if provided
         if (updateData.password) {
             const salt = await bcrypt.genSalt(10);
             updateData.password = await bcrypt.hash(updateData.password, salt);
+        } else {
+            delete updateData.password;
         }
 
         const db = pool.promise();
 
+        // Dynamically build update query
+        const fields = [];
+        const values = [];
+
+        for (const [key, value] of Object.entries(updateData)) {
+            if (key !== "id") {
+                fields.push(`${key} = ?`);
+                values.push(value);
+            }
+        }
+
+        values.push(updateData.id);
+
         const query = `
-            UPDATE partner 
-            SET name = ?, description = ?, password = ?, profileImage = ?, mobilePhone = ? 
+            UPDATE partner
+            SET ${fields.join(", ")}
             WHERE id = ?
         `;
-
-        const data = [
-            updateData.name,
-            updateData.description,
-            updateData.password,
-            updateData.profileImage,
-            updateData.mobilePhone,
-            updateData.id,
-        ];
-
-        const [result] = await db.query(query, data);
+        const [result] = await db.query(query, values);
 
         if (result.affectedRows === 0) {
             return res.status(404).json({ success: false, message: "Partner not found" });
         }
 
-        return res.status(200).json({ success: true, message: "Partner updated successfully" });
+        // ✅ Fetch updated partner data
+        const [rows] = await db.query(
+            `SELECT id, name, email, 'partner' AS type, refernceLink, profileImage, 'partner' AS role 
+             FROM partner WHERE id = ?`,
+            [updateData.id]
+        );
+
+        return res.status(200).json({
+            success: true,
+            message: "Partner updated successfully",
+            data: rows[0] || null
+        });
     } catch (error) {
         console.error("Error updating partner:", error);
         return res.status(500).json({
@@ -267,6 +289,8 @@ export const updatePartner = async (req, res) => {
         });
     }
 };
+
+
 
 // Reject Partner
 export const rejectPartner = async (req, res) => {
@@ -359,7 +383,7 @@ export const getPartner = async (req, res) => {
         return res.status(200).json({
             success: true,
             message: "Partner fetched successfully",
-            data: partner,
+            data: rows[0],
         });
     } catch (error) {
         console.error("Error fetching partner:", error);

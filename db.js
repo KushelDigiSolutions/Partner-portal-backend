@@ -20,7 +20,7 @@ pool.query(`
     name VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
-    profile VARCHAR(200),
+    profileImage TEXT,
     role ENUM('admin', 'super_admin') NOT NULL DEFAULT 'admin',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP

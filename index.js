@@ -10,6 +10,7 @@ import storePaymentRoutes from "./routes/storePayment.js";
 import playbookRoutes from "./routes/partnerPlaybookRoutes.js"
 import refralClent from "./routes/partnerReferralRoutes.js"
 import fileUpload from "express-fileupload";
+import { uploadToCloudinary } from './utils/cloudnary.js';
 import cors from 'cors';
 
 const app = express();
@@ -24,8 +25,8 @@ app.use(cors({
 }));
 
 app.use(fileUpload({
-    useTempFiles: true,
-    tempFileDir: "/tmp/",
+  useTempFiles: true,
+  tempFileDir: "/tmp/",
 }));
 // Example route
 app.get('/', (req, res) => {
@@ -41,6 +42,35 @@ app.use('/partner-store', partnerStoreRooutes);
 app.use("/api/store-payments", storePaymentRoutes);
 app.use("/api/playbooks", playbookRoutes);
 app.use("/api/refral", refralClent)
+app.post("/upload-image", async (req, res) => {
+  try {
+    if (!req.files || !req.files.image) {
+      return res.status(400).json({
+        status: false,
+        message: "No image file uploaded",
+      });
+    }
+
+    const image = req.files.image;
+
+    // Upload the image to Cloudinary asynchronously
+    const details = await uploadToCloudinary(image.tempFilePath);
+
+    // Return response with Cloudinary URL and public_id
+    return res.status(200).json({
+      status: true,
+      data: details?.secure_url,
+      public_id: details?.public_id,
+    });
+  } catch (error) {
+    console.error("Error in postImage:", error);
+    return res.status(500).json({
+      status: false,
+      message: "Image upload failed",
+      error: error.message,
+    });
+  }
+});
 
 
 // Check DB connection on startup
@@ -52,6 +82,6 @@ pool.getConnection((err, connection) => {
     connection.release();
   }
   app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(`Server running on port http://localhost:${PORT}`);
   });
 });
