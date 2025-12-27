@@ -2,6 +2,7 @@ import pool from '../db.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { sendMail } from '../utils/sendMail.js';
+import { passwordResetOtpTemplate } from '../utils/referralTemplates.js';
 
 const JWT_SECRET = process.env.JWT_SECRET;
 import crypto from "crypto";
@@ -129,10 +130,7 @@ export const forgetPassword = async (req, res) => {
 
         // Send email
         const subject = "Password Reset OTP - KRC Customizer";
-        const html = `
-            <p>Your OTP for password reset is: <b>${otpCode}</b></p>
-            <p>This OTP will expire in 10 minutes.</p>
-        `;
+        const html = passwordResetOtpTemplate(otpCode);
 
         await sendMail(email, subject, html);
 

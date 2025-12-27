@@ -1,7 +1,8 @@
 import pool from '../db.js';
 import { removeUndefined } from '../utils/helpers.js';
 import bcrypt from 'bcryptjs';
-import { sendMail, partnerEmailTemplate, adminEmailTemplate } from "../utils/sendMail.js";
+import { sendMail } from "../utils/sendMail.js";
+import { partnerEmailTemplate, adminEmailTemplate, partnerApprovedTemplate, partnerRejectedTemplate } from '../utils/referralTemplates.js';
 
 // Admin email (you can set in .env)
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
@@ -175,32 +176,12 @@ export const approvePartner = async (req, res) => {
         // -------------------
         // 📩 Send Email
         // -------------------
-
-        await sendMail(partner.email, "Your Partner Account Has Been Approved 🎉", `
-        <div style="font-family: Arial, sans-serif; line-height:1.6; color:#333; padding:20px;">
-          <h2 style="color:#2E86C1;">Welcome to Our Partner Program!</h2>
-          <p>Dear <strong>${partner.name}</strong>,</p>
-          <p>We are excited to inform you that your partner account has been <span style="color:green;font-weight:bold;">approved</span>.</p>
-          
-          <h3>🔑 Your Login Details:</h3>
-          <p><b>Email:</b> ${partner.email}</p>
-          <p><b>Password:</b> ${plainPassword}</p>
-          
-          <h3>📌 Your Referral Code:</h3>
-          <p><b>${referenceLink}</b></p>
-
-          <p>You can now log in and start using your partner dashboard.</p>
-
-          <a href="https://partner.krcustomizer.com/login" 
-             style="background:#2E86C1;color:white;padding:10px 15px;text-decoration:none;border-radius:5px;">
-             Login Now
-          </a>
-
-          <br/><br/>
-          <p>If you have any questions, feel free to reach out to our support team.</p>
-          <p>Best regards, <br/>Partner Support Team</p>
-        </div>
-      `,)
+        // Send approval email using template
+        await sendMail(
+          partner.email,
+          "Your Partner Account Has Been Approved 🎉",
+          partnerApprovedTemplate(partner, plainPassword, referenceLink)
+        );
 
 
         return res.status(200).json({
@@ -320,23 +301,7 @@ export const rejectPartner = async (req, res) => {
         await db.execute("UPDATE partner SET status = 'rejected' WHERE id = ?", [partnerId]);
 
         // 📩 Send rejection email
-        await sendMail(
-            partner.email,
-            "Partnership Request Rejected ❌",
-            `
-      <div style="font-family: Arial, sans-serif; line-height:1.6; color:#333; padding:20px;">
-        <h2 style="color:#E74C3C;">Partnership Request Update</h2>
-        <p>Dear <strong>${partner.name}</strong>,</p>
-        <p>We regret to inform you that your partnership request has been 
-        <span style="color:red;font-weight:bold;">rejected</span>.</p>
-
-        <p>You may re-apply in the future after meeting the required criteria.</p>
-
-        <br/>
-        <p>Best regards,<br/>Partner Support Team</p>
-      </div>
-      `
-        );
+        await sendMail(partner.email, "Partnership Request Rejected ❌", partnerRejectedTemplate(partner));
 
         return res.status(200).json({
             success: true,
